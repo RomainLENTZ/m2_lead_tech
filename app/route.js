@@ -1,5 +1,10 @@
 const formValidator = require('./form_validator');
 const photoModel = require('./photo_model');
+const { PubSub } = require('@google-cloud/pubsub');
+const { jobStatus } = require('./consume_message');
+
+
+
 
 function route(app) {
   app.get('/', (req, res) => {
@@ -11,21 +16,23 @@ function route(app) {
       tagmodeParameter: tagmode || '',
       photos: [],
       searchResults: false,
-      invalidParameters: false
+      invalidParameters: false,
+      zipFileUrl: null
     };
 
-    // if no input params are passed in then render the view with out querying the api
     if (!tags && !tagmode) {
       return res.render('index', ejsLocalVariables);
     }
 
-    // validate query parameters
     if (!formValidator.hasValidFlickrAPIParams(tags, tagmode)) {
       ejsLocalVariables.invalidParameters = true;
       return res.render('index', ejsLocalVariables);
     }
 
-    // get photos from flickr public feed api
+    if (jobStatus[tags] && jobStatus[tags].status === 'success') {
+      ejsLocalVariables.zipFileUrl = jobStatus[tags].url;
+    }
+
     return photoModel
       .getFlickrPhotos(tags, tagmode)
       .then(photos => {
@@ -37,6 +44,26 @@ function route(app) {
         return res.status(500).send({ error });
       });
   });
+
+
+  app.post('/zip', async (req, res) => {
+    const tags = req.query.tags;
+
+    const pubSubClient = new PubSub();
+    const topicName = 'projects/dmii-2024/topics/dmii2-7';
+
+    const data = JSON.stringify({ tags });
+
+    try {
+      const messageId = await pubSubClient.topic(topicName).publishMessage({ data: Buffer.from(data) });
+      console.log(`Message ${messageId} publié.`);
+    } catch (error) {
+      console.error(`Erreur : ${error.message}`);
+      res.status(500).send(`Erreur : ${error.message}`);
+    }
+  });
 }
+
+
 
 module.exports = route;

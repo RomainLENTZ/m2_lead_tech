@@ -16,10 +16,14 @@
     "prettier": "prettier --write app/*.js app/__{tests,mocks}__/*.js e2e_tests/*.js"
   },
   "dependencies": {
+    "@google-cloud/pubsub": "^4.7.2",
+    "@google-cloud/storage": "^7.13.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.8",
     "express": "~4.16.2",
-    "got": "^8.0.1",
-    "serve-favicon": "^2.4.5"
+    "got": "^8.3.2",
+    "serve-favicon": "^2.4.5",
+    "zip-stream": "^6.0.1"
   },
   "devDependencies": {
     "eslint": "^8.24.0",
