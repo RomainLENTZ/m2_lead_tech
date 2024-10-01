@@ -1,0 +1,27 @@
+name: release
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  publish-production-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v2
+
+      # Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.M2_LEAD_TECH }}
+
+      # Build the Docker image with the "production" tag
+      - name: Build the production Docker image
+        run: |
+          docker build . --tag ghcr.io/romainlentz/m2_lead_tech:production
+          docker run ghcr.io/romainlentz/m2_lead_tech:production
+          docker push ghcr.io/romainlentz/m2_lead_tech:production
