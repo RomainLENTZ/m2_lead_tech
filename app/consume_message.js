@@ -3,6 +3,7 @@ const { Storage } = require('@google-cloud/storage');
 const photoModel = require('./photo_model');
 const ZipStream = require('zip-stream');
 const got = require('got');
+const dataBase = require('./firebase');
 
 const pubSubClient = new PubSub();
 const storage = new Storage();
@@ -78,6 +79,7 @@ async function createAndUploadZip(photos, tags) {
     stream.on('finish', async () => {
       try {
         const publicUrl = await generateSignedUrl(zipFileName);
+        saveToFirebase(zipFileName, publicUrl);
         resolve(publicUrl);
       } catch (error) {
         reject(error);
@@ -121,6 +123,21 @@ subscription.on('message', messageHandler);
 subscription.on('error', (error) => {
   console.error(`Erreur de souscription : ${error.message}`);
 });
+
+function saveToFirebase(filename, publicUrl){
+  const timestamp = new Date().toISOString().split('T')[0];
+  const ref = dataBase.ref(`romain/${timestamp}/`);
+  ref.set({
+    filename: filename,
+    url: publicUrl
+  }, (error) => {
+    if (error) {
+      console.error('Erreur lors de l\'enregistrement dans Firebase:', error);
+    } else {
+      console.log('Données enregistrées dans Firebase avec succès.');
+    }
+  });
+}
 
 
 module.exports = {

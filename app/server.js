@@ -1,6 +1,7 @@
 const express = require('express');
 const favicon = require('serve-favicon');
 const path = require('path');
+const { initializeApp } = require('firebase-admin/app');
 
 const app = express();
 

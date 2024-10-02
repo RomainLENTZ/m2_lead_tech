@@ -6,6 +6,21 @@
     <title>Express App Testing Demo</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBMRbEW18ViCFCVdLS6lyoMfx0Z9ZGgW9U",
+        authDomain: "dmii-2024.firebaseapp.com",
+        projectId: "dmii-2024",
+        storageBucket: "dmii-2024.appspot.com",
+        messagingSenderId: "871398193932",
+        appId: "1:871398193932:web:4b9e45e35be93526b96729"
+      };
+      firebase.initializeApp(firebaseConfig);
+    </script>
+
+
   </head>
   <body>
     <header class="page-header">
@@ -22,4 +37,8 @@
           to search public photos.
         </p>
       </div>
+
+      <button id="google-sign-in" class="btn btn-primary">Se connecter</button>
+      <button id="sign-out" class="btn btn-secondary" style="display: none;">Se déconnecter</button>
+
     </header>
